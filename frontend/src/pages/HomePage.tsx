@@ -3,6 +3,7 @@ import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet'
 import L from 'leaflet'
 import { Link } from 'react-router-dom'
 import { Report, CATEGORY_LABELS, STATUS_LABELS, STATUS_COLORS } from '../types'
+import { getReports } from '../lib/api'
 
 // Fix iconos de Leaflet en Vite
 import iconUrl from 'leaflet/dist/images/marker-icon.png'
@@ -20,46 +21,34 @@ const DefaultIcon = L.icon({
 })
 L.Marker.prototype.options.icon = DefaultIcon
 
-// Datos de ejemplo mientras no hay backend
-const MOCK_REPORTS: Report[] = [
-  {
-    id: '1',
-    category: 'bache',
-    description: 'Bache grande en la esquina',
-    lat: -34.6037,
-    lng: -58.3816,
-    status: 'recibido',
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString()
-  },
-  {
-    id: '2',
-    category: 'luminaria',
-    description: 'Luminaria apagada hace una semana',
-    lat: -34.6050,
-    lng: -58.3800,
-    status: 'en_proceso',
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString()
-  }
-]
-
 export default function HomePage() {
   const [reports, setReports] = useState<Report[]>([])
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
-    // TODO: reemplazar por fetch('/api/reports')
-    setTimeout(() => {
-      setReports(MOCK_REPORTS)
-      setLoading(false)
-    }, 400)
+    getReports()
+      .then(setReports)
+      .catch(() => setError('No se pudieron cargar los reportes'))
+      .finally(() => setLoading(false))
   }, [])
 
   if (loading) {
     return (
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%' }}>
         Cargando mapa...
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%', gap: 12, padding: 20 }}>
+        <p style={{ color: 'var(--danger)' }}>{error}</p>
+        <p style={{ fontSize: 14, color: 'var(--gray-500)' }}>¿Está corriendo el backend en el puerto 3001?</p>
+        <button className="btn btn-primary" onClick={() => window.location.reload()}>
+          Reintentar
+        </button>
       </div>
     )
   }

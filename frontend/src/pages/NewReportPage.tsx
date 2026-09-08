@@ -1,6 +1,7 @@
 import { useState, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { ReportCategory, CATEGORY_LABELS } from '../types'
+import { createReport } from '../lib/api'
 
 const CATEGORIES = Object.keys(CATEGORY_LABELS) as ReportCategory[]
 
@@ -62,21 +63,16 @@ export default function NewReportPage() {
     setError(null)
 
     try {
-      // TODO: enviar al backend real
-      // const formData = new FormData()
-      // formData.append('category', category)
-      // formData.append('description', description)
-      // formData.append('lat', String(location.lat))
-      // formData.append('lng', String(location.lng))
-      // if (photo) formData.append('photo', photo)
-      // const res = await fetch('/api/reports', { method: 'POST', body: formData })
-
-      // Simulación
-      await new Promise(r => setTimeout(r, 800))
-      alert('¡Reporte enviado! (modo demo)')
+      await createReport({
+        category,
+        description: description || undefined,
+        lat: location.lat,
+        lng: location.lng,
+        photo
+      })
       navigate('/')
-    } catch (err) {
-      setError('Error al enviar el reporte. Intentá de nuevo.')
+    } catch (err: any) {
+      setError(err.message || 'Error al enviar el reporte. Intentá de nuevo.')
     } finally {
       setSubmitting(false)
     }
