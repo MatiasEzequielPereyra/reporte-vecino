@@ -3,10 +3,12 @@ import cors from 'cors'
 import dotenv from 'dotenv'
 import path from 'path'
 import { fileURLToPath } from 'url'
-import './db.js' // Inicializa la base de datos (crea tablas si no existen)
-import reportsRouter from './routes/reports.js'
 
 dotenv.config()
+
+import './db.js'
+import reportsRouter from './routes/reports.js'
+import authRouter from './routes/auth.js'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const app = express()
@@ -16,7 +18,7 @@ app.use(cors())
 app.use(express.json())
 app.use('/uploads', express.static(path.join(__dirname, '../uploads')))
 
-// Rutas
+app.use('/api/auth', authRouter)
 app.use('/api/reports', reportsRouter)
 
 app.get('/api/health', (req, res) => {
