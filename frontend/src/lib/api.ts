@@ -1,6 +1,12 @@
 import { Report, ReportStatus } from '../types'
+import { getAuthToken } from './auth'
 
 const API_BASE = '/api'
+
+function authHeaders(): HeadersInit {
+  const token = getAuthToken()
+  return token ? { Authorization: `Bearer ${token}` } : {}
+}
 
 export async function getReports(): Promise<Report[]> {
   const res = await fetch(`${API_BASE}/reports`)
@@ -48,10 +54,16 @@ export async function updateReportStatus(
 ): Promise<Report> {
   const res = await fetch(`${API_BASE}/reports/${id}/status`, {
     method: 'PATCH',
-    headers: { 'Content-Type': 'application/json' },
+    headers: {
+      'Content-Type': 'application/json',
+      ...authHeaders()
+    },
     body: JSON.stringify({ status, comment })
   })
 
-  if (!res.ok) throw new Error('Error al actualizar el estado')
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}))
+    throw new Error(err.error || 'Error al actualizar el estado')
+  }
   return res.json()
 }
