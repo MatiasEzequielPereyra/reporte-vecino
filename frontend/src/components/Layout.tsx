@@ -1,5 +1,6 @@
 import { Link, useLocation } from 'react-router-dom'
 import { ReactNode } from 'react'
+import { useAuth } from '../lib/auth'
 
 interface LayoutProps {
   children: ReactNode
@@ -35,6 +36,7 @@ function IconAdmin({ active }: { active: boolean }) {
 
 export default function Layout({ children }: LayoutProps) {
   const location = useLocation()
+  const { user, logout } = useAuth()
   const isHome = location.pathname === '/'
   const isNew = location.pathname === '/nuevo'
   const isAdmin = location.pathname.startsWith('/admin')
@@ -43,12 +45,24 @@ export default function Layout({ children }: LayoutProps) {
     <div className="app-shell">
       <header className="app-header">
         <Link to="/" className="app-header-title">
-          ReporteVecino
+          <span className="brand-reporte">Reporte</span>
+          <span className="brand-vecino">Vecino</span>
         </Link>
-        {isAdmin && (
-          <span style={{ fontSize: 12, color: 'var(--gray-500)', fontWeight: 500 }}>
-            Administración
-          </span>
+        {isAdmin && user && (
+          <button
+            type="button"
+            onClick={logout}
+            style={{
+              fontSize: 12,
+              color: 'var(--gray-500)',
+              fontWeight: 500,
+              padding: '6px 10px',
+              borderRadius: 8,
+              background: 'var(--gray-100)'
+            }}
+          >
+            Salir
+          </button>
         )}
       </header>
 
