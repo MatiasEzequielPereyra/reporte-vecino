@@ -1,18 +1,24 @@
 :root {
-  --primary: #1a73e8;
-  --primary-dark: #1557b0;
-  --success: #22c55e;
+  --primary: #009ee3;
+  --primary-dark: #0088c7;
+  --primary-light: #e8f7fc;
+  --success: #00a650;
   --warning: #f59e0b;
   --danger: #ef4444;
-  --gray-50: #f9fafb;
-  --gray-100: #f3f4f6;
-  --gray-200: #e5e7eb;
-  --gray-300: #d1d5db;
-  --gray-500: #6b7280;
-  --gray-700: #374151;
-  --gray-900: #111827;
-  --radius: 12px;
-  --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  --gray-50: #f5f5f5;
+  --gray-100: #f0f0f0;
+  --gray-200: #e5e5e5;
+  --gray-300: #d4d4d4;
+  --gray-400: #a3a3a3;
+  --gray-500: #737373;
+  --gray-700: #404040;
+  --gray-900: #171717;
+  --radius: 16px;
+  --radius-sm: 10px;
+  --shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.12);
+  --nav-height: 72px;
+  --header-height: 56px;
 }
 
 * {
@@ -27,6 +33,7 @@ html, body, #root {
   background-color: var(--gray-50);
   color: var(--gray-900);
   -webkit-font-smoothing: antialiased;
+  -webkit-tap-highlight-color: transparent;
 }
 
 button {
@@ -38,12 +45,146 @@ button {
 
 input, textarea, select {
   font-family: inherit;
-  font-size: 16px; /* evita zoom en iOS */
+  font-size: 16px;
 }
 
 a {
   color: var(--primary);
   text-decoration: none;
+}
+
+/* Layout shell */
+.app-shell {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  max-width: 480px;
+  margin: 0 auto;
+  background: var(--gray-50);
+  position: relative;
+}
+
+.app-header {
+  height: var(--header-height);
+  min-height: var(--header-height);
+  background: white;
+  border-bottom: 1px solid var(--gray-200);
+  padding: 0 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 200;
+}
+
+.app-header-title {
+  font-weight: 700;
+  font-size: 18px;
+  color: var(--gray-900);
+  letter-spacing: -0.02em;
+}
+
+.app-main {
+  flex: 1;
+  overflow: auto;
+  position: relative;
+  /* Espacio para la bottom nav */
+  padding-bottom: calc(var(--nav-height) + env(safe-area-inset-bottom, 0px));
+}
+
+/* Bottom navigation - estilo Mercado Pago */
+.bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  max-width: 480px;
+  height: calc(var(--nav-height) + env(safe-area-inset-bottom, 0px));
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+  background: white;
+  border-top: 1px solid var(--gray-200);
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-around;
+  z-index: 300;
+  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.06);
+}
+
+.nav-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 10px 8px 8px;
+  color: var(--gray-400);
+  font-size: 11px;
+  font-weight: 500;
+  transition: color 0.15s;
+  min-height: var(--nav-height);
+  text-decoration: none;
+}
+
+.nav-item.active {
+  color: var(--primary);
+}
+
+.nav-item svg {
+  width: 24px;
+  height: 24px;
+  stroke-width: 1.8;
+}
+
+.nav-item.active svg {
+  stroke-width: 2.2;
+}
+
+/* Botón central elevado - Reportar */
+.nav-fab-wrap {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  position: relative;
+}
+
+.nav-fab {
+  position: absolute;
+  top: -22px;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: var(--primary);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 16px rgba(0, 158, 227, 0.4);
+  transition: transform 0.15s, background 0.15s;
+  text-decoration: none;
+}
+
+.nav-fab:active {
+  transform: scale(0.94);
+  background: var(--primary-dark);
+}
+
+.nav-fab svg {
+  width: 26px;
+  height: 26px;
+}
+
+.nav-fab-label {
+  margin-top: 38px;
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--gray-400);
+}
+
+.nav-fab-wrap.active .nav-fab-label {
+  color: var(--primary);
 }
 
 /* Utilidades */
@@ -59,9 +200,9 @@ a {
   justify-content: center;
   gap: 8px;
   padding: 12px 20px;
-  border-radius: var(--radius);
+  border-radius: var(--radius-sm);
   font-weight: 600;
-  font-size: 16px;
+  font-size: 15px;
   transition: background-color 0.15s, transform 0.1s;
 }
 
@@ -79,7 +220,7 @@ a {
 }
 
 .btn-secondary {
-  background-color: var(--gray-200);
+  background-color: var(--gray-100);
   color: var(--gray-700);
 }
 
@@ -94,9 +235,56 @@ a {
   padding: 16px;
 }
 
-/* Leaflet fixes */
+/* Leaflet */
 .leaflet-container {
   height: 100%;
   width: 100%;
   z-index: 1;
+  background: var(--gray-100);
+}
+
+/* Controles de zoom: moverlos para no chocar con el badge */
+.leaflet-top.leaflet-left {
+  top: auto !important;
+  bottom: 24px !important;
+  left: 12px !important;
+}
+
+.leaflet-control-zoom {
+  border: none !important;
+  box-shadow: var(--shadow) !important;
+  border-radius: 12px !important;
+  overflow: hidden;
+}
+
+.leaflet-control-zoom a {
+  width: 36px !important;
+  height: 36px !important;
+  line-height: 36px !important;
+  font-size: 18px !important;
+  color: var(--gray-700) !important;
+  border: none !important;
+  background: white !important;
+}
+
+/* Badge del contador de reportes */
+.map-badge {
+  position: absolute;
+  top: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 500;
+  background: white;
+  border-radius: 999px;
+  padding: 8px 16px;
+  box-shadow: var(--shadow-lg);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--gray-700);
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+.map-badge strong {
+  color: var(--primary);
 }

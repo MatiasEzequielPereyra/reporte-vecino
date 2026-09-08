@@ -5,7 +5,6 @@ import { Link } from 'react-router-dom'
 import { Report, CATEGORY_LABELS, STATUS_LABELS, STATUS_COLORS } from '../types'
 import { getReports } from '../lib/api'
 
-// Fix iconos de Leaflet en Vite
 import iconUrl from 'leaflet/dist/images/marker-icon.png'
 import iconRetinaUrl from 'leaflet/dist/images/marker-icon-2x.png'
 import shadowUrl from 'leaflet/dist/images/marker-shadow.png'
@@ -43,9 +42,19 @@ export default function HomePage() {
 
   if (error) {
     return (
-      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%', gap: 12, padding: 20 }}>
+      <div style={{
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        height: '100%',
+        gap: 12,
+        padding: 20
+      }}>
         <p style={{ color: 'var(--danger)' }}>{error}</p>
-        <p style={{ fontSize: 14, color: 'var(--gray-500)' }}>¿Está corriendo el backend en el puerto 3001?</p>
+        <p style={{ fontSize: 14, color: 'var(--gray-500)' }}>
+          ¿Está corriendo el backend en el puerto 3001?
+        </p>
         <button className="btn btn-primary" onClick={() => window.location.reload()}>
           Reintentar
         </button>
@@ -55,11 +64,19 @@ export default function HomePage() {
 
   return (
     <div style={{ height: '100%', position: 'relative' }}>
+      {/* Badge centrado arriba — no tapa los controles de zoom */}
+      <div className="map-badge">
+        <strong>{reports.length}</strong>
+        {' '}
+        reporte{reports.length !== 1 ? 's' : ''} en el mapa
+      </div>
+
       <MapContainer
         center={[-34.6037, -58.3816]}
         zoom={15}
         style={{ height: '100%', width: '100%' }}
         scrollWheelZoom={true}
+        zoomControl={true}
       >
         <TileLayer
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
@@ -84,30 +101,16 @@ export default function HomePage() {
               {report.description && (
                 <p style={{ margin: '8px 0 0', fontSize: 13 }}>{report.description}</p>
               )}
-              <Link to={`/reporte/${report.id}`} style={{ fontSize: 13, marginTop: 6, display: 'inline-block' }}>
+              <Link
+                to={`/reporte/${report.id}`}
+                style={{ fontSize: 13, marginTop: 6, display: 'inline-block' }}
+              >
                 Ver detalle →
               </Link>
             </Popup>
           </Marker>
         ))}
       </MapContainer>
-
-      {/* Contador simple */}
-      <div style={{
-        position: 'absolute',
-        top: 12,
-        left: 12,
-        right: 12,
-        zIndex: 1000,
-        background: 'white',
-        borderRadius: 12,
-        padding: '10px 14px',
-        boxShadow: 'var(--shadow)',
-        fontSize: 14,
-        fontWeight: 500
-      }}>
-        {reports.length} reporte{reports.length !== 1 ? 's' : ''} en el mapa
-      </div>
     </div>
   )
 }
