@@ -36,6 +36,12 @@ Thumbs.db
 uploads/
 public/uploads/
 
+# Base de datos local
+data/
+*.db
+*.db-shm
+*.db-wal
+
 # Coverage
 coverage/
 

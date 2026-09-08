@@ -4,6 +4,12 @@ import path from 'path'
 import { v4 as uuidv4 } from 'uuid'
 import { fileURLToPath } from 'url'
 import fs from 'fs'
+import {
+  getAllReports,
+  getReportById,
+  createReport,
+  updateStatus
+} from '../db.js'
 
 const router = Router()
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
@@ -34,21 +40,29 @@ const upload = multer({
   }
 })
 
-// Almacenamiento en memoria (MVP). Después se reemplaza por base de datos.
-const reports = []
-
 // GET /api/reports
 router.get('/', (req, res) => {
-  res.json(reports)
+  try {
+    const reports = getAllReports()
+    res.json(reports)
+  } catch (err) {
+    console.error(err)
+    res.status(500).json({ error: 'Error al listar reportes' })
+  }
 })
 
 // GET /api/reports/:id
 router.get('/:id', (req, res) => {
-  const report = reports.find(r => r.id === req.params.id)
-  if (!report) {
-    return res.status(404).json({ error: 'Reporte no encontrado' })
+  try {
+    const report = getReportById(req.params.id)
+    if (!report) {
+      return res.status(404).json({ error: 'Reporte no encontrado' })
+    }
+    res.json(report)
+  } catch (err) {
+    console.error(err)
+    res.status(500).json({ error: 'Error al obtener el reporte' })
   }
-  res.json(report)
 })
 
 // POST /api/reports
@@ -60,26 +74,15 @@ router.post('/', upload.single('photo'), (req, res) => {
       return res.status(400).json({ error: 'Faltan campos obligatorios: category, lat, lng' })
     }
 
-    const report = {
+    const report = createReport({
       id: uuidv4(),
       category,
       description: description || null,
       lat: parseFloat(lat),
       lng: parseFloat(lng),
-      photoUrl: req.file ? `/uploads/${req.file.filename}` : null,
-      status: 'recibido',
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-      history: [
-        {
-          status: 'recibido',
-          comment: 'Reporte recibido',
-          changedAt: new Date().toISOString()
-        }
-      ]
-    }
+      photoUrl: req.file ? `/uploads/${req.file.filename}` : null
+    })
 
-    reports.push(report)
     res.status(201).json(report)
   } catch (err) {
     console.error(err)
@@ -87,27 +90,24 @@ router.post('/', upload.single('photo'), (req, res) => {
   }
 })
 
-// PATCH /api/reports/:id/status  (para el panel admin)
+// PATCH /api/reports/:id/status
 router.patch('/:id/status', (req, res) => {
-  const report = reports.find(r => r.id === req.params.id)
-  if (!report) {
-    return res.status(404).json({ error: 'Reporte no encontrado' })
+  try {
+    const { status, comment } = req.body
+    if (!status) {
+      return res.status(400).json({ error: 'Falta el campo status' })
+    }
+
+    const report = updateStatus(req.params.id, status, comment)
+    if (!report) {
+      return res.status(404).json({ error: 'Reporte no encontrado' })
+    }
+
+    res.json(report)
+  } catch (err) {
+    console.error(err)
+    res.status(500).json({ error: 'Error al actualizar el estado' })
   }
-
-  const { status, comment } = req.body
-  if (!status) {
-    return res.status(400).json({ error: 'Falta el campo status' })
-  }
-
-  report.status = status
-  report.updatedAt = new Date().toISOString()
-  report.history.push({
-    status,
-    comment: comment || null,
-    changedAt: new Date().toISOString()
-  })
-
-  res.json(report)
 })
 
 export default router

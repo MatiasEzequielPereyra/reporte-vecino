@@ -3,6 +3,7 @@ import cors from 'cors'
 import dotenv from 'dotenv'
 import path from 'path'
 import { fileURLToPath } from 'url'
+import './db.js' // Inicializa la base de datos (crea tablas si no existen)
 import reportsRouter from './routes/reports.js'
 
 dotenv.config()
@@ -24,4 +25,5 @@ app.get('/api/health', (req, res) => {
 
 app.listen(PORT, () => {
   console.log(`🚀 Backend corriendo en http://localhost:${PORT}`)
+  console.log(`📦 Base de datos SQLite en backend/data/reporte-vecino.db`)
 })
