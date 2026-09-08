@@ -9,6 +9,7 @@ export default function Layout({ children }: LayoutProps) {
   const location = useLocation()
   const isHome = location.pathname === '/'
   const isNew = location.pathname === '/nuevo'
+  const isAdmin = location.pathname === '/admin'
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
@@ -69,6 +70,17 @@ export default function Layout({ children }: LayoutProps) {
         }}>
           <span style={{ fontSize: 20 }}>📷</span>
           Reportar
+        </Link>
+        <Link to="/admin" style={{
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          fontSize: 12,
+          color: isAdmin ? 'var(--primary)' : 'var(--gray-500)',
+          padding: '4px 12px'
+        }}>
+          <span style={{ fontSize: 20 }}>⚙️</span>
+          Admin
         </Link>
       </nav>
     </div>
