@@ -15,6 +15,8 @@ Esta herramienta está pensada para regalarse a municipios. Es gratuita, de cód
 - Panel de administración simple
 - PWA instalable (funciona como app en el celular)
 - Funcionamiento parcial offline
+- necesito que funcione o se v a todo a la meirda
+- 
 
 ## Stack técnico
 
